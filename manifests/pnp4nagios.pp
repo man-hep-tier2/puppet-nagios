@@ -6,6 +6,8 @@ class nagios::pnp4nagios (
   $nagios_service_name       = 'pnp4nagios-service',
   $nagios_service_action_url = '/pnp4nagios/index.php/graph?host=$HOSTNAME$&srv=$SERVICEDESC$',
   $perflog                   = '/var/log/pnp4nagios/service-perfdata',
+  $npcd_command_line         = false,
+  $npcd                      = false,
   # The apache config snippet
   $apache_httpd              = true,
   $apache_httpd_conf_content = undef,
@@ -33,8 +35,21 @@ class nagios::pnp4nagios (
 
   package { 'pnp4nagios': ensure => installed }
 
+  # If npcd is used, enable the service and use the appropriate nagios command line
+  if $npcd {
+    service { 'npcd':
+      ensure => 'running',
+      enable => true,
+    }
+    $nagios_command_line_final = $npcd_command_line ? {
+      false   => "/bin/mv ${perflog} /var/spool/pnp4nagios/service-perfdata.\$TIMET\$",
+      default => $npcd_command_line,
+    }
+  } else {
+    $nagios_command_line_final = "${nagios_command_line} ${perflog}"
+  }
   nagios_command { $nagios_command_name:
-    command_line => "${nagios_command_line} ${perflog}",
+    command_line => $nagios_command_line_final,
     notify       => Service['nagios'],
   }
 
