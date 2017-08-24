@@ -212,16 +212,25 @@ class nagios::server (
   # For the default email notifications to work
   ensure_packages(['mailx'])
 
-  service { 'nagios':
-    ensure    => 'running',
-    enable    => true,
-    # "service nagios status" returns 0 when "nagios is not running" :-(
-    hasstatus => false,
-    # Don't get fooled by any process with "nagios" in its command line
-    pattern   => '/usr/sbin/nagios',
-    # Work around files created root:root mode 600 (known issue)
-    restart   => '/bin/chgrp nagios /etc/nagios/nagios_*.cfg && /bin/chmod 640 /etc/nagios/nagios_*.cfg && /bin/kill -HUP `cat /var/run/nagios/nagios.pid`',
-    require   => Package['nagios'],
+  if $nagios4_service_restart {
+    service { 'nagios':
+      ensure    => 'running',
+      enable    => true,
+      hasstatus => true,
+      require   => Package['nagios'],
+    }
+  } else {
+    service { 'nagios':
+      ensure    => 'running',
+      enable    => true,
+      # "service nagios status" returns 0 when "nagios is not running" :-(
+      hasstatus => false,
+      # Don't get fooled by any process with "nagios" in its command line
+      pattern   => '/usr/sbin/nagios',
+      # Work around files created root:root mode 600 (known issue)
+      restart   => '/bin/chgrp nagios /etc/nagios/nagios_*.cfg && /bin/chmod 640 /etc/nagios/nagios_*.cfg && /bin/kill -HUP `cat /var/run/nagios/nagios.pid`',
+      require   => Package['nagios'],
+    }
   }
 
   if $apache_httpd {
