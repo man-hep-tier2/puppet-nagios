@@ -38,8 +38,9 @@ class nagios::pnp4nagios (
   # If npcd is used, enable the service and use the appropriate nagios command line
   if $npcd {
     service { 'npcd':
-      ensure => 'running',
-      enable => true,
+      ensure  => 'running',
+      enable  => true,
+      require => Package['pnp4nagios'],
     }
     $nagios_command_line_final = $npcd_command_line ? {
       false   => "/bin/mv ${perflog} /var/spool/pnp4nagios/service-perfdata.\$TIMET\$",
