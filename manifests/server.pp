@@ -335,6 +335,7 @@ class nagios::server (
     notify  => Service['nagios'],
     require => Package['nagios'],
   }
+  File <<| tag == "nagios-${nagios_server}-service-targetdir" |>>
   Nagios_servicedependency <<| tag == "nagios-${nagios_server}" |>> {
     notify  => Service['nagios'],
     require => Package['nagios'],
