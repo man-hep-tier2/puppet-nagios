@@ -299,7 +299,10 @@ class nagios::server (
       owner   => 'root',
       group   => 'nagios',
       mode    => '0755',
+      recurse => true,
+      purge   => true,
       require => Package['nagios'],
+      notify  => Service['nagios'], # this restarts nagios when files are purged
     }
     $service_reqs = File[$service_target_dir]
   } else {
