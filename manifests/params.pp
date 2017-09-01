@@ -2,7 +2,9 @@
 #
 # Parameters for and from the nagios module.
 #
-class nagios::params {
+class nagios::params(
+  $service_target_dir = undef,
+) {
 
   $libdir = $::architecture ? {
     'x86_64' => 'lib64',
@@ -127,6 +129,10 @@ class nagios::params {
       }
       $nagios4_service_restart = false
     }
+  }
+
+  Nagios::Service {
+    targetdir => $service_target_dir,
   }
 
 }

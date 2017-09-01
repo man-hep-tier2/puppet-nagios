@@ -303,7 +303,18 @@ class nagios::server (
     notify  => Service['nagios'],
     require => Package['nagios'],
   }
-
+  if $service_target_dir {
+    file { $service_target_dir:
+      ensure  => 'directory',
+      owner   => 'root',
+      group   => 'nagios',
+      mode    => '0755',
+      require => Package['nagios'],
+    }
+    $service_reqs = File[$service_target_dir]
+  } else {
+    $service_reqs = Package['nagios']
+  }
   # Realize all nagios related exported resources for this server
   # Automatically reload nagios for relevant configuration changes
   # Require the package for the parent directory to exist initially
@@ -332,10 +343,13 @@ class nagios::server (
     require => Package['nagios'],
   }
   Nagios_service <<| tag == "nagios-${nagios_server}" |>> {
-    notify  => Service['nagios'],
-    require => Package['nagios'],
+    notify    => Service['nagios'],
+    require   => $service_reqs,
   }
-  File <<| tag == "nagios-${nagios_server}-service-targetdir" |>>
+  File <<| tag == "nagios-${nagios_server}-service-targetdir" |>> {
+    before  => Service['nagios'],
+    require => $service_reqs,
+  }
   Nagios_servicedependency <<| tag == "nagios-${nagios_server}" |>> {
     notify  => Service['nagios'],
     require => Package['nagios'],
