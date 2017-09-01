@@ -60,8 +60,6 @@ define nagios::service (
       owner   => 'root',
       group   => 'nagios',
       mode    => '0640',
-      require => File[$targetdir],
-      before  => Service['nagios'],
     }
   } else {
     $target = undef
