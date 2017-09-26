@@ -51,6 +51,9 @@ class nagios::client (
   $service_first_notification_delay = getvar('::nagios_service_first_notification_delay'),
   $service_max_check_attempts       = getvar('::nagios_service_max_check_attempts'),
   $service_notification_period      = getvar('::nagios_service_notification_period'),
+  $service_notification_interval    = getvar('::nagios_service_notification_interval'),
+  $service_notification_options     = getvar('::nagios_service_notification_options'),
+  $service_notifications_enabled    = getvar('::nagios_service_notifications_enabled'),
   $service_use                      = 'generic-service',
   # other
   $plugin_dir                       = $::nagios::params::plugin_dir,

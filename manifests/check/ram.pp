@@ -8,6 +8,9 @@ class nagios::check::ram (
   $first_notification_delay = $::nagios::client::service_first_notification_delay,
   $max_check_attempts       = $::nagios::client::service_max_check_attempts,
   $notification_period      = $::nagios::client::service_notification_period,
+  $notification_interval    = $::nagios::client::service_notification_interval,
+  $notification_options     = $::nagios::client::service_notification_options,
+  $notifications_enabled    = $::nagios::client::service_notifications_enabled,
   $use                      = $::nagios::client::service_use,
 ) inherits ::nagios::client {
 
@@ -34,6 +37,9 @@ class nagios::check::ram (
     contact_groups           => $contact_groups,
     first_notification_delay => $first_notification_delay,
     notification_period      => $notification_period,
+    notification_interval    => $notification_interval,
+    notification_options     => $notification_options,
+    notifications_enabled    => $notifications_enabled,
     max_check_attempts       => $max_check_attempts,
     use                      => $use,
   }
