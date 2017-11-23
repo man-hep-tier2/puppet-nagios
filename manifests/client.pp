@@ -39,6 +39,7 @@ class nagios::client (
   $host_check_period                = getvar('::nagios_host_check_period'),
   $host_check_command               = getvar('::nagios_host_check_command'),
   $host_contact_groups              = getvar('::nagios_host_contact_groups'),
+  $host_contacts                    = getvar('::nagios_host_contacts'),
   $host_hostgroups                  = getvar('::nagios_host_hostgroups'),
   $host_notes                       = getvar('::nagios_host_notes'),
   $host_notes_url                   = getvar('::nagios_host_notes_url'),
