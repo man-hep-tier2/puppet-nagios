@@ -6,7 +6,7 @@ binaries = [
 ]
 
 binaries.each do |filename|
-  if FileTest.exists?(filename)
+  if FileTest.exist?(filename)
     Facter.add('nagios_mongod') { setcode { true } }
   end
 end
