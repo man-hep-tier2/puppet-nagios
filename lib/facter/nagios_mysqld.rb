@@ -7,7 +7,7 @@ binaries = [
 ]
 
 binaries.each do |filename|
-  if FileTest.exist?(filename)
+  if FileTest.exists?(filename)
     Facter.add('nagios_mysqld') { setcode { true } }
   end
 end

@@ -8,7 +8,7 @@ binaries = [
 
 mainfact = false
 binaries.each do |filename|
-  if FileTest.exist?(filename)
+  if FileTest.exists?(filename)
     mainfact = true
     # Create a specific nagios_dns_<exename> fact
     Facter.add('nagios_dns_' + filename[/[^\/]+$/]) { setcode { true } }
