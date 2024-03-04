@@ -16,7 +16,11 @@ define nagios::service (
   $first_notification_delay = $nagios::client::service_first_notification_delay,
   $max_check_attempts       = $nagios::client::service_max_check_attempts,
   $notification_period      = $nagios::client::service_notification_period,
+  $notification_interval    = $nagios::client::service_notification_interval,
+  $notification_options     = $nagios::client::service_notification_options,
+  $notifications_enabled    = $nagios::client::service_notifications_enabled,
   $use                      = $nagios::client::service_use,
+  $targetdir                = undef,
 ) {
 
   # Work around being passed undefined variables resulting in ''
@@ -40,9 +44,29 @@ define nagios::service (
     undef   => $nagios::client::service_use,
     default => $use,
   }
-
   # Support an array of tags for multiple nagios servers
   $service_tag = regsubst($server,'^(.+)$','nagios-\1')
+  if $targetdir {
+    $target = "${targetdir}/${title}.cfg"
+    # The create file is owned by root with strict permissions by default.
+    # It's necessary to change ownership / permissions by setting the
+    # appropriate options of the nagios_service type (either here or by
+    # using defaults (Nagios_service { ... }).
+    # But there seem to be problems with the dependencies.
+    # I've encountered tests where it tried to restart
+    # nagios before updating the ownership / permissions.
+    # Therefore we create a file object here that ensures all files
+    # are updated correctly before restarting nagios.
+    @@file { $target:
+      ensure  => 'present',
+      tag     => "${service_tag}-service-targetdir",
+      owner   => 'root',
+      group   => 'nagios',
+      mode    => '0640',
+    }
+  } else {
+    $target = undef
+  }
   @@nagios_service { $title:
     ensure                   => $ensure,
     host_name                => $host_name,
@@ -54,8 +78,15 @@ define nagios::service (
     first_notification_delay => $first_notification_delay,
     max_check_attempts       => $final_max_check_attempts,
     notification_period      => $final_notification_period,
+    notification_interval    => $notification_interval,
+    notification_options     => $notification_options,
+    notifications_enabled    => $notifications_enabled,
     use                      => $final_use,
     tag                      => $service_tag,
+    target                   => $target,
+    owner                    => 'root',
+    group                    => 'nagios',
+    mode                     => '0640',
   }
 
 }

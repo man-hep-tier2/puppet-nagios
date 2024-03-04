@@ -2,7 +2,9 @@
 #
 # Parameters for and from the nagios module.
 #
-class nagios::params {
+class nagios::params(
+  $service_target_dir = undef,
+) {
 
   $libdir = $facts['os']['architecture'] ? {
     'x86_64' => 'lib64',
@@ -53,7 +55,7 @@ class nagios::params {
       if ( $::operatingsystem != 'Fedora' and versioncmp($::operatingsystemrelease, '7') >= 0 ) {
         $nrpe_pid_file    = hiera('nagios::params::nrpe_pid_file','/run/nrpe/nrpe.pid')
         $cfg_template     = 'nagios/nagios-4.cfg.erb'
-} else {
+      } else {
         $nrpe_pid_file    = hiera('nagios::params::nrpe_pid_file','/var/run/nrpe/nrpe.pid')
         $cfg_template     = 'nagios/nagios.cfg.erb'
       }
@@ -66,6 +68,7 @@ class nagios::params {
         ensure => installed,
         tag    => $name,
       }
+      $nagios4_service_restart = true
     }
     'Gentoo': {
       $nrpe_package       = [ 'net-analyzer/nrpe' ]
@@ -85,6 +88,7 @@ class nagios::params {
         ensure => installed,
         tag    => $nagios_plugins_packages,
       }
+      $nagios4_service_restart = false
     }
     'Debian', 'Ubuntu': {
       $nrpe_package       = [ 'nagios-nrpe-server' ]
@@ -104,6 +108,7 @@ class nagios::params {
         ensure => installed,
         tag    => $nagios_plugins_packages,
       }
+      $nagios4_service_restart = false
     }
     default: {
       $nrpe_package       = [ 'nrpe', 'nagios-plugins' ]
@@ -122,7 +127,12 @@ class nagios::params {
         ensure => installed,
         tag    => $name,
       }
+      $nagios4_service_restart = false
     }
+  }
+
+  Nagios::Service {
+    targetdir => $service_target_dir,
   }
 
 }

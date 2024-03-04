@@ -213,16 +213,25 @@ class nagios::server (
   # For the default email notifications to work
   ensure_packages(['mailx'])
 
-  service { 'nagios':
-    ensure    => 'running',
-    enable    => true,
-    # "service nagios status" returns 0 when "nagios is not running" :-(
-    hasstatus => false,
-    # Don't get fooled by any process with "nagios" in its command line
-    pattern   => '/usr/sbin/nagios',
-    # Work around files created root:root mode 600 (known issue)
-    restart   => '/bin/chgrp nagios /etc/nagios/nagios_*.cfg && /bin/chmod 640 /etc/nagios/nagios_*.cfg && /bin/kill -HUP `cat /var/run/nagios/nagios.pid`',
-    require   => Package['nagios'],
+  if $nagios4_service_restart {
+    service { 'nagios':
+      ensure    => 'running',
+      enable    => true,
+      hasstatus => true,
+      require   => Package['nagios'],
+    }
+  } else {
+    service { 'nagios':
+      ensure    => 'running',
+      enable    => true,
+      # "service nagios status" returns 0 when "nagios is not running" :-(
+      hasstatus => false,
+      # Don't get fooled by any process with "nagios" in its command line
+      pattern   => '/usr/sbin/nagios',
+      # Work around files created root:root mode 600 (known issue)
+      restart   => '/bin/chgrp nagios /etc/nagios/nagios_*.cfg && /bin/chmod 640 /etc/nagios/nagios_*.cfg && /bin/kill -HUP `cat /var/run/nagios/nagios.pid`',
+      require   => Package['nagios'],
+    }
   }
 
   if $apache_httpd {
@@ -294,7 +303,21 @@ class nagios::server (
     notify  => Service['nagios'],
     require => Package['nagios'],
   }
-
+  if $service_target_dir {
+    file { $service_target_dir:
+      ensure  => 'directory',
+      owner   => 'root',
+      group   => 'nagios',
+      mode    => '0755',
+      recurse => true,
+      purge   => true,
+      require => Package['nagios'],
+      notify  => Service['nagios'], # this restarts nagios when files are purged
+    }
+    $service_reqs = File[$service_target_dir]
+  } else {
+    $service_reqs = Package['nagios']
+  }
   # Realize all nagios related exported resources for this server
   # Automatically reload nagios for relevant configuration changes
   # Require the package for the parent directory to exist initially
@@ -323,8 +346,12 @@ class nagios::server (
     require => Package['nagios'],
   }
   Nagios_service <<| tag == "nagios-${nagios_server}" |>> {
-    notify  => Service['nagios'],
-    require => Package['nagios'],
+    notify    => Service['nagios'],
+    require   => $service_reqs,
+  }
+  File <<| tag == "nagios-${nagios_server}-service-targetdir" |>> {
+    before  => Service['nagios'],
+    require => $service_reqs,
   }
   Nagios_servicedependency <<| tag == "nagios-${nagios_server}" |>> {
     notify  => Service['nagios'],
@@ -1058,7 +1085,7 @@ class nagios::server (
     'check_period'                 => '24x7',
     'max_check_attempts'           => '3',
     'check_interval'               => '10',
-    'retry_check_interval'         => '2',
+    'retry_interval'               => '2',
     'contact_groups'               => 'admins',
     'notification_options'         => 'w,u,c,r',
     'notification_interval'        => '60',
@@ -1070,7 +1097,7 @@ class nagios::server (
     'use'                   => 'generic-service',
     'max_check_attempts'    => '4',
     'check_interval'        => '5',
-    'retry_check_interval'  => '1',
+    'retry_interval'        => '1',
     'register'              => '0',
   }
   create_resources (nagios_service, { 'local-service' => $template_local_service }, $template_local_service_defaults)

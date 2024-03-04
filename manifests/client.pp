@@ -24,6 +24,14 @@ class nagios::client (
   $nrpe_debug                       = '0',
   $nrpe_command_timeout             = '60',
   $nrpe_connection_timeout          = '300',
+  # nrpe ssl options are available in nrpe 3 and later
+  $nrpe_ssl_version                 = undef,
+  $nrpe_ssl_cipher_list             = undef,
+  $nrpe_ssl_cacert_file             = undef,
+  $nrpe_ssl_cert_file               = undef,
+  $nrpe_ssl_privatekey_file         = undef,
+  $nrpe_ssl_client_certs            = undef,
+  $nrpe_ssl_logging                 = undef,
   # host defaults
   $host_address                     = getvar('::nagios_host_address'),
   $host_address6                    = getvar('::nagios_host_address6'),
@@ -31,6 +39,7 @@ class nagios::client (
   $host_check_period                = getvar('::nagios_host_check_period'),
   $host_check_command               = getvar('::nagios_host_check_command'),
   $host_contact_groups              = getvar('::nagios_host_contact_groups'),
+  $host_contacts                    = getvar('::nagios_host_contacts'),
   $host_hostgroups                  = getvar('::nagios_host_hostgroups'),
   $host_notes                       = getvar('::nagios_host_notes'),
   $host_notes_url                   = getvar('::nagios_host_notes_url'),
@@ -43,6 +52,9 @@ class nagios::client (
   $service_first_notification_delay = getvar('::nagios_service_first_notification_delay'),
   $service_max_check_attempts       = getvar('::nagios_service_max_check_attempts'),
   $service_notification_period      = getvar('::nagios_service_notification_period'),
+  $service_notification_interval    = getvar('::nagios_service_notification_interval'),
+  $service_notification_options     = getvar('::nagios_service_notification_options'),
+  $service_notifications_enabled    = getvar('::nagios_service_notifications_enabled'),
   $service_use                      = 'generic-service',
   # other
   $plugin_dir                       = $::nagios::params::plugin_dir,
