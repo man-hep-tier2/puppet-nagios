@@ -53,8 +53,8 @@ class nagios::client (
   # Set the variables to be used, including scoped from elsewhere, based on
   # the optional fact or parameter from here
   $host_name = $nagios_host_name ? {
-    ''      => $::fqdn,
-    undef   => $::fqdn,
+    ''      => $facts['networking']['fqdn'],
+    undef   => $facts['networking']['fqdn'],
     default => $nagios_host_name,
   }
   $server = $nagios_server ? {
@@ -158,7 +158,7 @@ class nagios::client (
     if getvar('::nagios_httpd_nginx') {      class { '::nagios::check::nginx': } }
     if getvar('::nagios_pci_mptsas') {       class { '::nagios::check::mptsas': } }
     if getvar('::nagios_mysqld') {
-      case $::operatingsystem {
+      case $facts['os']['name'] {
         'RedHat', 'Fedora', 'CentOS', 'Scientific', 'Amazon': {
           class { '::nagios::check::mysql_health': }
         }
