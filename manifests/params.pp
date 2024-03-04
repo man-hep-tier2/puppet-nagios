@@ -45,14 +45,14 @@ class nagios::params(
     'nagios-plugins-users',
   ]
 
-  case $::operatingsystem {
+  case $facts['os']['name'] {
     'RedHat', 'Fedora', 'CentOS', 'Scientific', 'Amazon', 'Rocky': {
       $nrpe_package       = [ 'nrpe', 'nagios-plugins' ]
       $nrpe_package_alias = undef
       $nrpe_service       = 'nrpe'
       $nrpe_user          = 'nrpe'
       $nrpe_group         = 'nrpe'
-      if ( $::operatingsystem != 'Fedora' and versioncmp($::operatingsystemrelease, '7') >= 0 ) {
+      if ( $facts['os']['name'] != 'Fedora' and versioncmp($facts['os']['release']['major'], '7') >= 0 ) {
         $nrpe_pid_file    = hiera('nagios::params::nrpe_pid_file','/run/nrpe/nrpe.pid')
         $cfg_template     = 'nagios/nagios-4.cfg.erb'
       } else {
