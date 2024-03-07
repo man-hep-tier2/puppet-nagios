@@ -33,8 +33,8 @@ define nagios::host (
       default => $facts['memory']['swap']['total_bytes'],
     }
     $final_notes = $notes ? {
-        ''      => "<table><tr><th>OS</th><td>${facts['os']['release']['name']} ${facts['os']['release']['full']}</td></tr><tr><th>CPU</th><td>${facts['processors']['physicalcount']} x ${::processor0}</td></tr><tr><th>Architecture</th><td>${facts['os']['architecture']}</td></tr><tr><th>Kernel</th><td>${facts['kernelrelease']}</td></tr><tr><th>Memory</th><td>${facts['memory']['system']['total_bytes']}</td></tr><tr><th>Swap</th><td>${swapsize}</td></tr></table>",
-        undef   => "<table><tr><th>OS</th><td>${facts['os']['release']['name']} ${facts['os']['release']['full']}</td></tr><tr><th>CPU</th><td>${facts['processors']['physicalcount']} x ${::processor0}</td></tr><tr><th>Architecture</th><td>${facts['processors']['physicalcount']}</td></tr><tr><th>Kernel</th><td>${facts['os']['architecture']}</td></tr><tr><th>Memory</th><td>${facts['memory']['system']['total_bytes']}</td></tr><tr><th>Swap</th><td>${swapsize}</td></tr></table>",
+        ''      => "<table><tr><th>OS</th><td>${facts['os']['release']['name']} ${facts['os']['release']['full']}</td></tr><tr><th>CPU</th><td>${facts['processors']['physicalcount']} x ${facts['processors']['models']['0']}</td></tr><tr><th>Architecture</th><td>${facts['os']['architecture']}</td></tr><tr><th>Kernel</th><td>${facts['kernelrelease']}</td></tr><tr><th>Memory</th><td>${facts['memory']['system']['total_bytes']}</td></tr><tr><th>Swap</th><td>${swapsize}</td></tr></table>",
+        undef   => "<table><tr><th>OS</th><td>${facts['os']['release']['name']} ${facts['os']['release']['full']}</td></tr><tr><th>CPU</th><td>${facts['processors']['physicalcount']} x ${facts['processors']['models']['0']}</td></tr><tr><th>Architecture</th><td>${facts['processors']['physicalcount']}</td></tr><tr><th>Kernel</th><td>${facts['os']['architecture']}</td></tr><tr><th>Memory</th><td>${facts['memory']['system']['total_bytes']}</td></tr><tr><th>Swap</th><td>${swapsize}</td></tr></table>",
         default => $notes,
     }
     $final_notes_url = $notes_url ? {
