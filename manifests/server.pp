@@ -211,7 +211,11 @@ class nagios::server (
 
   # Other packages
   # For the default email notifications to work
-  ensure_packages(['mailx'])
+  if ( $facts['os']['name'] != 'Fedora' and versioncmp($facts['os']['release']['major'], '7') >= 0 ) {
+    ensure_packages(['s-nail'])
+  } else {
+    ensure_packages(['mailx'])
+  }
 
   if $nagios4_service_restart {
     service { 'nagios':
