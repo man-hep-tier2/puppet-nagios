@@ -19,6 +19,7 @@ define nagios::service (
   $notification_interval    = $nagios::client::service_notification_interval,
   $notification_options     = $nagios::client::service_notification_options,
   $notifications_enabled    = $nagios::client::service_notifications_enabled,
+  $is_volatile              = $nagios::client::is_volatile,
   $use                      = $nagios::client::service_use,
   $targetdir                = undef,
 ) {
@@ -81,6 +82,7 @@ define nagios::service (
     notification_interval    => $notification_interval,
     notification_options     => $notification_options,
     notifications_enabled    => $notifications_enabled,
+    is_volatile              => $is_volatile,
     use                      => $final_use,
     tag                      => $service_tag,
     target                   => $target,

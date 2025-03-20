@@ -55,6 +55,7 @@ class nagios::client (
   $service_notification_interval    = getvar('::nagios_service_notification_interval'),
   $service_notification_options     = getvar('::nagios_service_notification_options'),
   $service_notifications_enabled    = getvar('::nagios_service_notifications_enabled'),
+  $is_volatile                      = getvar('::is_volatile'),
   $service_use                      = 'generic-service',
   # other
   $plugin_dir                       = $::nagios::params::plugin_dir,
